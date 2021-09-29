@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	faux_browser.NewProfile()
+	faux_browser.NewProfile().StartBrowsing()
 }
