@@ -7,10 +7,11 @@ import (
 )
 
 type Profile struct {
-	Browser    Browser // Browser the user will use
-	Sites      []Site  // Sites the user will navigate to
-	WPM        int     // The number of words per minute the user can "read"
-	WPM_Jitter int     // Jitter to the user's WPM
+	Browser    Browser  // Browser the user will use
+	Searches   []Search // Searches the user will conduct
+	Sites      []Site   // Sites the user will navigate to
+	WPM        int      // The number of words per minute the user can "read"
+	WPM_Jitter int      // Jitter to the user's WPM
 }
 
 func NewProfile() (p *Profile) {
@@ -90,6 +91,8 @@ func (p *Profile) GenerateProfile_Cybersecurity() {
 	p.Sites = append(p.Sites, Site{"https://book.hacktricks.xyz", true, false, []string{"book.hacktricks.xyz"}})
 	p.Sites = append(p.Sites, Site{"https://www.virustotal.com", true, false, []string{"virustotal.com", "www.virustotal.com"}})
 	p.Sites = append(p.Sites, Site{"https://gchq.github.io/CyberChef", false, false, []string{}})
+
+	p.Searches = append(p.Searches, Search{SearchEngine_Google, []string{"dirtycow exploit", "dirty cow exploit", "proof of concept exploit for dirty cow"}, 1, 5})
 }
 
 // Generate a profile of sites that a Developer might visit
@@ -99,6 +102,8 @@ func (p *Profile) GenerateProfile_Developer() {
 
 	p.Sites = append(p.Sites, Site{"https://docs.microsoft.com/en-us/", true, false, []string{"docs.microsoft.com"}})
 	p.Sites = append(p.Sites, Site{"https://stackoverflow.com/questions/tagged/c%2B%2B", true, false, []string{"stackoverflow.com"}})
+
+	p.Searches = append(p.Searches, Search{SearchEngine_Google, []string{"golang code won't compile", "go.mod import package dissappears on save"}, 1, 3})
 }
 
 // Generate a profile of sites that an average employee would visit
@@ -106,12 +111,13 @@ func (p *Profile) GenerateProfile_Employee_Average() {
 	p.WPM = 200
 	p.WPM_Jitter = 10
 
+	// USER TODO: Add company related sites!
 	p.Sites = append(p.Sites, Site{"https://www.facebook.com/", true, false, []string{"facebook.com", "www.facebook.com"}})
 	p.Sites = append(p.Sites, Site{"https://www.linkedin.com/", true, false, []string{"linkedin.com", "www.linkedin.com"}})
 	p.Sites = append(p.Sites, Site{"http://www.youtube.com/", true, false, []string{"youtube.com", "www.youtube.com"}})
 	p.Sites = append(p.Sites, Site{"https://www.buzzfeed.com", true, false, []string{"buzzfeed.com", "www.buzzfeed.com"}})
 
-	// USER TODO: Add company related sites!
+	p.Searches = append(p.Searches, Search{SearchEngine_Bing, []string{"sports game last week", "ball game last night", "who won the game", "game scores"}, 2, 4})
 }
 
 // Generate a profile of sites that a "driven" employee would visit
@@ -119,10 +125,9 @@ func (p *Profile) GenerateProfile_Employee_Driven() {
 	p.WPM = 300
 	p.WPM_Jitter = 50
 
+	// USER TODO: Add company related sites!
 	p.Sites = append(p.Sites, Site{"https://www.themuse.com/advice/47-habits-of-highly-successful-employees", false, false, []string{}})
 	p.Sites = append(p.Sites, Site{"http://www.youtube.com/", true, false, []string{"youtube.com", "www.youtube.com"}})
-
-	// USER TODO: Add company related sites!
 }
 
 // Generate a profile of sites that a gamer would visit
