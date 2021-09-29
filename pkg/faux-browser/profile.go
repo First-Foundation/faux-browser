@@ -72,6 +72,9 @@ func NewProfile() (p *Profile) {
 		}
 	}
 
+	// Add the common sites to all profiles
+	p.GenerateProfile_Common()
+
 	return
 }
 

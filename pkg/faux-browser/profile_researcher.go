@@ -6,5 +6,5 @@ func (p *Profile) GenerateProfile_Researcher() {
 	p.WPM = 250
 	p.WPM_Jitter = 25
 
-	p.Sites = append(p.Sites, Site{"https://en.wikipedia.org", true, false, []string{"en.wikipedia.org"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://en.wikipedia.org", SITE_CANCLICKLINK, []string{"en.wikipedia.org"}, 0, 0})
 }

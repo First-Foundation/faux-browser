@@ -6,7 +6,6 @@ func (p *Profile) GenerateProfile_Sales() {
 	p.WPM = 225
 	p.WPM_Jitter = 25
 
-	p.Sites = append(p.Sites, Site{"https://www.salesforce.com", true, false, []string{"salesforce.com", "www.salesforce.com"}, 0, 0})
-	p.Sites = append(p.Sites, Site{"https://www.neilpatel.com", true, false, []string{"neilpatel.com", "www.neilpatel.com"}, 0, 0})
-	p.Sites = append(p.Sites, Site{"https://www.linkedin.com/", true, false, []string{"linkedin.com", "www.linkedin.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.salesforce.com", SITE_CANCLICKLINK | SITE_CANCLICKANYLINK, []string{"salesforce.com", "www.salesforce.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.neilpatel.com", SITE_CANCLICKLINK, []string{"neilpatel.com", "www.neilpatel.com"}, 0, 0})
 }

@@ -6,6 +6,6 @@ func (p *Profile) GenerateProfile_Gamer() {
 	p.WPM = 200
 	p.WPM_Jitter = 10
 
-	p.Sites = append(p.Sites, Site{"https://store.steampowered.com", true, false, []string{"steampowered.com", "store.steampowered.com"}, 60, 180})
-	p.Sites = append(p.Sites, Site{"http://www.youtube.com/", true, false, []string{"youtube.com", "www.youtube.com"}, 300, 600})
+	p.Sites = append(p.Sites, Site{"https://store.steampowered.com", SITE_CANCLICKLINK, []string{"steampowered.com", "store.steampowered.com"}, 60, 180})
+	p.Sites = append(p.Sites, Site{"http://www.youtube.com/", SITE_CANCLICKLINK, []string{"youtube.com", "www.youtube.com"}, 300, 600})
 }

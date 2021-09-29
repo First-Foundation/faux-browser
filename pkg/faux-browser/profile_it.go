@@ -6,5 +6,5 @@ func (p *Profile) GenerateProfile_IT() {
 	p.WPM = 200
 	p.WPM_Jitter = 30
 
-	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/InformationTechnology/", true, false, []string{"reddit.com", "www.reddit.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/InformationTechnology/", SITE_CANCLICKLINK, []string{"reddit.com", "www.reddit.com"}, 0, 0})
 }
