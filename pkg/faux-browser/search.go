@@ -13,4 +13,5 @@ const (
 	SearchEngine_Google SearchEngine = iota + 1
 	SearchEngine_Yahoo
 	SearchEngine_Bing
+	SearchEngine_Indeed
 )

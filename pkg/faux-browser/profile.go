@@ -108,9 +108,19 @@ func (p *Profile) StartBrowsing() {
 
 		// Check if we are in the schedule to be browsing
 		if p.ScheduleFunc(time.Now()) {
-			// If we have URLs queued up, then pick one at random to visit,
-			// otherwise, visit a Site or perform a Search
-			if len(urlqueue) > 0 {
+			if FakeWeightedRandomCheck(1000) {
+				// Very small chance of ignoring the queue and visiting a site
+				// from the list of browser.navigatabledomains
+				i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Browser.NavigatableDomains))))
+				u := "https://" + p.Browser.NavigatableDomains[i.Int64()]
+
+				// Visit the random site!
+				urls, sleeptime = p.Browser.VisitSite(Site{u, SITE_CANCLICKANYLINK, []string{}, 0, 0}, p)
+				urlqueue = append(urlqueue, urls...)
+			} else if len(urlqueue) > 0 {
+				// If we have URLs queued up, then pick one at random to visit,
+				// otherwise, visit a Site or perform a Search
+
 				// Pick a url at random from the queue
 				i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(urlqueue))))
 				u := urlqueue[i.Int64()]

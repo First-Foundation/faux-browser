@@ -14,6 +14,9 @@ func (p *Profile) GenerateProfile_Management() {
 	p.Sites = append(p.Sites, Site{"https://www.linkedin.com", SITE_CANCLICKLINK, []string{"linkedin.com", "www.linkedin.com"}, 60, 300})
 	p.Sites = append(p.Sites, Site{"https://www.ceo.com", SITE_CANCLICKLINK, []string{"ceo.com", "www.ceo.com"}, 0, 0})
 	p.Sites = append(p.Sites, Site{"http://wsj.com/", SITE_CANCLICKLINK, []string{"wsj.com", "www.wsj.com"}, 0, 0})
+
+	p.Searches = append(p.Searches, Search{SearchEngine_Indeed, []string{"assistant manager", "store associate", "store shopper", "store clerk", "store manager"}, 2, 5})
+	p.Searches = append(p.Searches, Search{SearchEngine_Indeed, []string{"secretary", "assistant", "administrative assistant", "professional assistant"}, 2, 5})
 }
 
 func ProfileScheduleFunc_Management(t time.Time) (atdesk bool) {
