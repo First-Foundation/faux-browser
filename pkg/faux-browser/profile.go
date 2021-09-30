@@ -57,11 +57,11 @@ func NewProfile() (p *Profile) {
 	case "tech":
 		p.GenerateProfile_IT()
 	default:
-		if FakeWeightedRandomCheck(100) {
+		if FakeWeightedRandomCheck(30) {
 			p.GenerateProfile_Management()
-		} else if FakeWeightedRandomCheck(100) {
+		} else if FakeWeightedRandomCheck(20) {
 			p.GenerateProfile_Employee_Driven()
-		} else if FakeWeightedRandomCheck(50) {
+		} else if FakeWeightedRandomCheck(10) {
 			p.GenerateProfile_Sales()
 		} else if FakeWeightedRandomCheck(10) {
 			p.GenerateProfile_Redditor()
@@ -75,9 +75,9 @@ func NewProfile() (p *Profile) {
 			p.GenerateProfile_Cybersecurity()
 		} else if FakeWeightedRandomCheck(10) {
 			p.GenerateProfile_Gamer()
-		} else if FakeWeightedRandomCheck(100) {
+		} else if FakeWeightedRandomCheck(30) {
 			p.GenerateProfile_Threat()
-		} else if FakeWeightedRandomCheck(50) {
+		} else if FakeWeightedRandomCheck(20) {
 			p.GenerateProfile_Researcher()
 		} else {
 			p.GenerateProfile_Employee_Average()
@@ -98,5 +98,66 @@ func FakeWeightedRandomCheck(check int64) bool {
 ///////////////////////////////////////////////////////////////////////////////
 
 func (p *Profile) StartBrowsing() {
+	var sleeptime int64
+	var urls []string
+	var urlqueue []string
 
+	for {
+		// Reset sleeptime
+		sleeptime = 30
+
+		// Check if we are in the schedule to be browsing
+		if p.ScheduleFunc(time.Now()) {
+			// If we have URLs queued up, then pick one at random to visit,
+			// otherwise, visit a Site or perform a Search
+			if len(urlqueue) > 0 {
+				// Pick a url at random from the queue
+				i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(urlqueue))))
+				u := urlqueue[i.Int64()]
+
+				// Remove it from the queue
+				urlqueue = append(urlqueue[:i.Int64()], urlqueue[i.Int64()+1:]...)
+
+				// Visit it and add any additional urls to the queue
+				urls, sleeptime = p.Browser.VisitSite(Site{u, SITE_CANCLICKANYLINK, []string{}, 0, 0}, p)
+				urlqueue = append(urlqueue, urls...)
+			} else {
+				// Are we searching or are we visiting a site directly?
+				if FakeWeightedRandomCheck(30) {
+					if len(p.Searches) > 0 {
+						// Use a search engine and add a few items to the queue!
+						i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Searches))))
+						urls, sleeptime = p.Browser.ConductSearch(p.Searches[i.Int64()], p)
+						urlqueue = append(urlqueue, urls...)
+					} else {
+						// Visit a site directly!
+						i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Sites))))
+						urls, sleeptime = p.Browser.VisitSite(p.Sites[i.Int64()], p)
+						urlqueue = append(urlqueue, urls...)
+					}
+				}
+			}
+		} else {
+			// Wait 10-30 minutes if we are not in our schedule
+			sleeptime = GetMinMax(6000, 18000)
+		}
+
+		// Sanity check of sleeptime to avoid issues
+		if sleeptime < 30 {
+			sleeptime = GetMinMax(15, 45)
+		}
+
+		// Sleep!
+		time.Sleep(time.Duration(sleeptime) * time.Second)
+	}
+}
+
+func (p *Profile) GetWPM() int64 {
+	max := int64(p.WPM + p.WPM_Jitter)
+	min := int64(p.WPM - p.WPM_Jitter)
+	wpm, err := rand.Int(rand.Reader, big.NewInt(int64(max-min)))
+	if err == nil {
+		return wpm.Int64() + min
+	}
+	return 200
 }

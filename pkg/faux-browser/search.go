@@ -3,8 +3,8 @@ package faux_browser
 type Search struct {
 	Engine            SearchEngine
 	Queries           []string
-	MinResultsToClick int
-	MaxResultsToClick int
+	MinResultsToClick int64
+	MaxResultsToClick int64
 }
 
 type SearchEngine byte

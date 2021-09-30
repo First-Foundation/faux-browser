@@ -4,8 +4,8 @@ type Site struct {
 	SeedURL            string
 	Options            SiteOption
 	NavigatableDomains []string // In addition to those specified in browser.go
-	MinSecondsOnSite   int      // If 0, Profile's "estimated WPM" result is used as the min
-	MaxSecondsOnSite   int      // If 0, Profile's "estimated WPM" is used as the max
+	MinSecondsOnSite   int64    // If 0, Profile's "estimated WPM" result is used as the min
+	MaxSecondsOnSite   int64    // If 0, Profile's "estimated WPM" is used as the max
 }
 
 type SiteOption byte
@@ -28,4 +28,8 @@ const (
 	// actually run javascript, etc. If not set, will "psudeo" open by GET-ing
 	// .js, .css, .jpeg, .etc files.
 	SITE_USEREALBROWSER SiteOption = 0b00000100
+
+	// SITE_SEARCHENGINE identifies the site as being a search engine. Used to
+	// modify the logic to pick the links to visit.
+	SITE_SEARCHENGINE SiteOption = 0b00001000
 )
