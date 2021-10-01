@@ -180,6 +180,10 @@ func NewBrowser() (b *Browser) {
 		"forbes.com",
 		"www.forbes.com",
 
+		// Fox News Sites
+		"foxnews.com",
+		"www.foxnews.com",
+
 		// Github Sites
 		"github.com",
 		"docs.github.com",
@@ -259,6 +263,10 @@ func NewBrowser() (b *Browser) {
 		"homedepot.com",
 		"www.homedepot.com",
 
+		// HuffPost Sites
+		"huffpost.com",
+		"www.huffpost.com",
+
 		// IMDB Site
 		"imdb.com",
 		"www.imdb.com",
@@ -311,10 +319,18 @@ func NewBrowser() (b *Browser) {
 		"microsoft.com",
 		"www.microsoft.com",
 
+		// MSNBC Sites
+		"msnbc.com",
+		"www.msnbc.com",
+
 		// Mozilla Sites
 		"mozilla.com",
 		"support.mozilla.com",
 		"www.mozilla.com",
+
+		// NBC News Sites
+		"nbcnews.com",
+		"www.nbcnews.com",
 
 		// Netflix Sites
 		"netflix.com",
@@ -327,6 +343,10 @@ func NewBrowser() (b *Browser) {
 		// Nordstrom Sites
 		"nordstrom.com",
 		"www.nordstrom.com",
+
+		// NPR Sites
+		"npr.org",
+		"www.npr.org",
 
 		// PHP.net Sites
 		"php.net",
@@ -440,6 +460,7 @@ func NewBrowser() (b *Browser) {
 
 		// Yahoo Sites
 		"yahoo.com",
+		"news.yahoo.com",
 		"www.yahoo.com",
 
 		// Yelp Sites
