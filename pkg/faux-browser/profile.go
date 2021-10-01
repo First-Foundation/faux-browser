@@ -27,34 +27,38 @@ func String2Time24(s string) (t time.Time) {
 	return
 }
 
-func NewProfile() (p *Profile) {
+func NewProfile(prof string) (p *Profile) {
 	p = &Profile{}
 	p.Browser = *NewBrowser()
 
+	profileChecker := func(check string) bool {
+		return prof == check || os.Getenv("FAUX_BROWSER_ROLE") == check
+	}
+
 	// Generate a profile
 	// Check if the environment variable is set, otherwise "weighted random"
-	switch os.Getenv("FAUX_B_ROLE") {
-	case "cybersec":
+	switch {
+	case profileChecker("cybersec"):
 		p.GenerateProfile_Cybersecurity()
-	case "dev":
+	case profileChecker("dev"):
 		p.GenerateProfile_Developer()
-	case "driven":
+	case profileChecker("driven"):
 		p.GenerateProfile_Employee_Driven()
-	case "employee":
+	case profileChecker("employee"):
 		p.GenerateProfile_Employee_Average()
-	case "gamer":
+	case profileChecker("gamer"):
 		p.GenerateProfile_Gamer()
-	case "manage":
+	case profileChecker("manage"):
 		p.GenerateProfile_Management()
-	case "news":
+	case profileChecker("news"):
 		p.GenerateProfile_NewsAddict()
-	case "reddit":
+	case profileChecker("reddit"):
 		p.GenerateProfile_Redditor()
-	case "research":
+	case profileChecker("research"):
 		p.GenerateProfile_Researcher()
-	case "sales":
+	case profileChecker("sales"):
 		p.GenerateProfile_Sales()
-	case "tech":
+	case profileChecker("tech"):
 		p.GenerateProfile_IT()
 	default:
 		if FakeWeightedRandomCheck(30) {
