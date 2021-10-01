@@ -92,7 +92,7 @@ func NewProfile() (p *Profile) {
 
 func FakeWeightedRandomCheck(check int64) bool {
 	x, _ := rand.Int(rand.Reader, big.NewInt(check))
-	return x == big.NewInt(1)
+	return x.Int64() == 1
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -139,7 +139,9 @@ func (p *Profile) StartBrowsing() {
 						i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Searches))))
 						urls, sleeptime = p.Browser.ConductSearch(p.Searches[i.Int64()], p)
 						urlqueue = append(urlqueue, urls...)
-					} else {
+					}
+				} else {
+					if len(p.Sites) > 0 {
 						// Visit a site directly!
 						i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Sites))))
 						urls, sleeptime = p.Browser.VisitSite(p.Sites[i.Int64()], p)

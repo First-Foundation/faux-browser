@@ -490,7 +490,7 @@ func (b *Browser) VisitSite(s Site, p *Profile) (urls []string, sleeptime int64)
 	url := s.SeedURL
 
 	// Make the request!
-	body := GetRequest(url, false)
+	url, body := GetRequest(url, false)
 
 	// Make the request look real and get those links!
 	SimulateBrowserVisit(url, body)
@@ -502,26 +502,33 @@ func (b *Browser) VisitSite(s Site, p *Profile) (urls []string, sleeptime int64)
 	// TODO: Add links/results to urls
 
 	// Before we close out, does it need to be opened in a real browser?
-	switch runtime.GOOS {
-	case "darwin":
-		exec.Command("open", url).Start()
-	case "linux":
-		exec.Command("xdg-open", url).Start()
-	case "windows":
-		exec.Command("cmd", "/C", "start", url).Start()
+	if s.Options&SITE_SEARCHENGINE > 0 {
+		switch runtime.GOOS {
+		case "darwin":
+			exec.Command("open", url).Start()
+		case "linux":
+			exec.Command("xdg-open", url).Start()
+		case "windows":
+			exec.Command("cmd", "/C", "start", url).Start()
+		}
 	}
 
 	return
 }
 
-func GetRequest(url string, ignorecontent bool) (body []byte) {
+// Perform the get request, returning the url (in case of redirects) and data
+func GetRequest(url string, ignorecontent bool) (newurl string, body []byte) {
 	resp, err := http.Get(url)
 	if err != nil {
 		// Bail!
 		return
 	}
+	newurl = resp.Request.URL.String()
+
 	defer resp.Body.Close()
-	if !ignorecontent {
+	if ignorecontent {
+		io.ReadAll(resp.Body)
+	} else {
 		body, _ = io.ReadAll(resp.Body)
 	}
 	return
@@ -545,10 +552,10 @@ func SimulateBrowserVisit(u string, b []byte) (words int64, links []string) {
 tokenloop:
 	for {
 		tokenType := tokenizer.Next()
+		token := tokenizer.Token()
 
 		switch tokenType {
 		case html.StartTagToken, html.SelfClosingTagToken:
-			token := tokenizer.Token()
 			switch token.Data {
 			case "a":
 				// Add the href attribute to our list of links
@@ -566,10 +573,19 @@ tokenloop:
 				}
 			case "link":
 				// Poss stylesheets, get them!
+				var val string
+				var isstylesheet bool
 				for _, attr := range token.Attr {
 					if attr.Key == "href" {
-						simulatedownload(attr.Val)
+						val = attr.Val
+					} else if attr.Key == "rel" {
+						if attr.Val == "stylesheet" {
+							isstylesheet = true
+						}
 					}
+				}
+				if isstylesheet {
+					simulatedownload(val)
 				}
 			case "script":
 				// Poss javascript, get the files!
@@ -580,9 +596,7 @@ tokenloop:
 				}
 			}
 		case html.TextToken:
-			words = words + int64(len(strings.Fields(string(tokenizer.Text()))))
-			//DEBUG
-			println(tokenizer.Text())
+			words = words + int64(len(strings.Fields(token.Data)))
 		case html.ErrorToken:
 			// Bail if EOF
 			if tokenizer.Err() == io.EOF {
