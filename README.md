@@ -1,4 +1,10 @@
 # faux-browser
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/First-Foundation/faux-browser/agent-terminal-go-build?style=plastic)
+![GitHub last commit](https://img.shields.io/github/last-commit/First-Foundation/faux-browser?style=plastic)
+![GitHub](https://img.shields.io/github/license/First-Foundation/faux-browser?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/First-Foundation/faux-browser?style=plastic)
+
 Fake Automated User eXperience for generating user browser activity.
 
 ## Rough Instructions For Use
