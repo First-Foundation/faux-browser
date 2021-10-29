@@ -9,13 +9,26 @@ func (p *Profile) GenerateProfile_Developer() {
 	p.WPM = 200
 	p.WPM_Jitter = 10
 
+	///////////////////////////////////////////////////////////////////////////
+	// SITES TO VISIT                                                        //
+	///////////////////////////////////////////////////////////////////////////
+
 	p.Sites = append(p.Sites, Site{"https://docs.microsoft.com/en-us/", SITE_CANCLICKLINK, []string{"docs.microsoft.com"}, 0, 0})
 	p.Sites = append(p.Sites, Site{"https://stackoverflow.com/questions/tagged/c%2B%2B", SITE_CANCLICKLINK, []string{"stackoverflow.com"}, 0, 0})
+
+	///////////////////////////////////////////////////////////////////////////
+	// SEARCHES TO CONDUCT                                                   //
+	///////////////////////////////////////////////////////////////////////////
 
 	p.Searches = append(p.Searches, Search{SearchEngine_Google, []string{"golang code won't compile", "go.mod import package dissappears on save"}, 1, 3})
 }
 
 func ProfileScheduleFunc_Developer(t time.Time) (atdesk bool) {
+	// Is this outside of normal work hours?
+	if t.Before(String2Time24("08:00")) || t.After(String2Time24("18:00")) {
+		return false
+	}
+
 	// Am I on lunch?
 	if t.After(String2Time24("11:10")) && t.Before(String2Time24("11:50")) {
 		return false

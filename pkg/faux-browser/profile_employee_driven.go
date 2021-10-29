@@ -9,12 +9,25 @@ func (p *Profile) GenerateProfile_Employee_Driven() {
 	p.WPM = 300
 	p.WPM_Jitter = 50
 
+	///////////////////////////////////////////////////////////////////////////
+	// SITES TO VISIT                                                        //
+	///////////////////////////////////////////////////////////////////////////
+
 	// USER TODO: Add company related sites!
 	p.Sites = append(p.Sites, Site{"https://www.themuse.com/advice/47-habits-of-highly-successful-employees", SITE_DONTCLICKLINKS, []string{}, 0, 0})
 	p.Sites = append(p.Sites, Site{"http://www.youtube.com/", SITE_CANCLICKLINK, []string{"youtube.com", "www.youtube.com"}, 60, 180})
+
+	///////////////////////////////////////////////////////////////////////////
+	// SEARCHES TO CONDUCT                                                   //
+	///////////////////////////////////////////////////////////////////////////
 }
 
 func ProfileScheduleFunc_EmployeeDriven(t time.Time) (atdesk bool) {
+	// Is this outside of normal work hours?
+	if t.Before(String2Time24("07:45")) || t.After(String2Time24("17:00")) {
+		return false
+	}
+
 	// Am I on lunch?
 	if t.After(String2Time24("11:10")) && t.Before(String2Time24("12:10")) {
 		return false

@@ -9,12 +9,25 @@ func (p *Profile) GenerateProfile_Redditor() {
 	p.WPM = 150
 	p.WPM_Jitter = 50
 
+	///////////////////////////////////////////////////////////////////////////
+	// SITES TO VISIT                                                        //
+	///////////////////////////////////////////////////////////////////////////
+
 	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/AskReddit", SITE_CANCLICKLINK | SITE_CANCLICKANYLINK, []string{"reddit.com", "www.reddit.com"}, 0, 0})
 	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/pics", SITE_CANCLICKLINK | SITE_CANCLICKANYLINK, []string{"reddit.com", "www.reddit.com"}, 0, 0})
 	p.Sites = append(p.Sites, Site{"https://www.buzzfeed.com", SITE_CANCLICKLINK | SITE_CANCLICKANYLINK, []string{"buzzfeed.com", "www.buzzfeed.com"}, 0, 0})
+
+	///////////////////////////////////////////////////////////////////////////
+	// SEARCHES TO CONDUCT                                                   //
+	///////////////////////////////////////////////////////////////////////////
 }
 
 func ProfileScheduleFunc_Redditor(t time.Time) (atdesk bool) {
+	// Is this outside of normal work hours?
+	if t.Before(String2Time24("08:00")) || t.After(String2Time24("16:30")) {
+		return false
+	}
+
 	// Am I on lunch?
 	if t.After(String2Time24("11:05")) && t.Before(String2Time24("12:05")) {
 		return false

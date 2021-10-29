@@ -523,7 +523,7 @@ func (b *Browser) VisitSite(s Site, p *Profile) (urls []string, sleeptime int64)
 	// TODO: Add links/results to urls
 
 	// Before we close out, does it need to be opened in a real browser?
-	if s.Options&SITE_SEARCHENGINE > 0 {
+	if s.Options&SITE_USEREALBROWSER > 0 {
 		switch runtime.GOOS {
 		case "darwin":
 			exec.Command("open", url).Start()
