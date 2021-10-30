@@ -6,13 +6,16 @@ import (
 	"fmt"
 	"io"
 	"math/big"
+	mathrand "math/rand"
 	"net/http"
 	"net/url"
+	urlpkg "net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"golang.org/x/net/html"
 )
@@ -201,8 +204,10 @@ func NewBrowser() (b *Browser) {
 		// Google Sites
 		"google.com",
 		"adwords.google.com",
+		"ads.google.com",
 		"answers.google.com",
 		"ap.google.com",
+		"artsandculture.google.com",
 		"blogsearch.google.com",
 		"books.google.com",
 		"clients.google.com",
@@ -210,6 +215,7 @@ func NewBrowser() (b *Browser) {
 		"checkout.google.com",
 		"code.google.com",
 		"desktop.google.com",
+		"developers.google.com",
 		"dl.google.com",
 		"docs.google.com",
 		"drive.google.com",
@@ -229,11 +235,14 @@ func NewBrowser() (b *Browser) {
 		"picasaweb.google.com",
 		"play.google.com",
 		"plus.google.com",
+		"podcasts.google.com",
+		"policies.google.com",
 		"scholar.google.com",
 		"services.google.com",
 		"sites.google.com",
 		"sketchup.google.com",
 		"spreadsheets.google.com",
+		"stadia.google.com",
 		"suggestqueries.google.com",
 		"support.google.com",
 		"talkgadget.google.com",
@@ -494,33 +503,120 @@ func (b *Browser) ConductSearch(s Search, p *Profile) (urls []string, sleeptime 
 		u = fmt.Sprintf("https://www.bing.com/search?q=%s", query)
 	case SearchEngine_Google:
 		u = fmt.Sprintf("https://google.com/search?q=%s", query)
-	case SearchEngine_Yahoo:
-		u = fmt.Sprintf("https://search.yahoo.com/search?p=%s", query)
 	case SearchEngine_Indeed:
 		u = fmt.Sprintf("https://www.indeed.com/jobs?q=%s", query)
+	case SearchEngine_Yahoo:
+		u = fmt.Sprintf("https://search.yahoo.com/search?p=%s", query)
 	default:
 		return
 	}
 
-	urls, sleeptime = b.VisitSite(Site{u, SITE_SEARCHENGINE, []string{}, 0, 0}, p)
+	urls_tmp, sleeptime := b.VisitSite(Site{u, SITE_SEARCHENGINE, []string{}, 0, 0}, p)
+
+	var search_results []string
+
+	switch s.Engine {
+	case SearchEngine_Bing:
+		// Bing just gives the raw url in links, so filter on what doesn't have bing.
+		for _, url := range urls_tmp {
+			if !strings.Contains(url, "bing.com") {
+				search_results = append(search_results, url)
+			}
+		}
+	case SearchEngine_Google:
+		// Filter on "/url?q=" where it does *not* have accounts.google.com in it
+		for _, url := range urls_tmp {
+			if strings.Contains(url, "google.com/url?q=") && !strings.Contains(url, "accounts.google.com") {
+				search_results = append(search_results, url)
+			}
+		}
+	case SearchEngine_Indeed:
+		// Filter only on those urls with "viewjob"
+		for _, url := range urls_tmp {
+			if strings.Contains(url, "indeed.com/viewjob") {
+				search_results = append(search_results, url)
+			}
+		}
+	case SearchEngine_Yahoo:
+		// Filter on "r.search.yahoo.com", but filter out those redirecting to yahoo
+		for _, url := range urls_tmp {
+			if strings.Contains(url, "r.search.yahoo.com") && !strings.Contains(url, "yahoo.com%%2f") {
+				search_results = append(search_results, url)
+			}
+		}
+	default:
+		return
+	}
+
+	urls = GetRandomSubSetOfUrls(search_results, s.MinResultsToClick, s.MaxResultsToClick)
 
 	return
 }
 
+// VisitSite simulates visiting the site specified, based on the profile provided.
+// It returns urls (a list of urls to visit further) and sleeptime (time to wait in seconds).
 func (b *Browser) VisitSite(s Site, p *Profile) (urls []string, sleeptime int64) {
+	println("Visiting " + s.SeedURL)
+
 	url := s.SeedURL
+	var urls_tmp []string
 
 	// Make the request!
 	url, body := GetRequest(url, false)
 
 	// Make the request look real and get those links!
-	SimulateBrowserVisit(url, body)
+	words, links := SimulateBrowserVisit(url, body)
 
-	// TODO: Get links/results
+	// Handle the links that were returned
+	parsedurl, err := urlpkg.Parse(url)
+	if err != nil {
+		return
+	}
+	domain := parsedurl.Hostname()
 
-	// TODO: Filter links/results against allow list
+	for _, l := range links {
+		// Modify links that assume the URI (i.g., are 'index.html' instead of 'www.example.com/index.html')
+		parsedurl_l, err := urlpkg.ParseRequestURI(l)
 
-	// TODO: Add links/results to urls
+		if err != nil {
+			break
+		}
+		if parsedurl_l.Hostname() == "" {
+			l = parsedurl.Scheme + "://" + strings.ReplaceAll(domain+"/"+l, "//", "/")
+			parsedurl_l, err = urlpkg.Parse(l)
+		}
+
+		// Filter against allow list
+		if err == nil {
+			match_l := false
+			domain_l := parsedurl_l.Hostname()
+
+			// Check if it is in the smaller site list of domains we can visit
+			for _, d := range s.NavigatableDomains {
+				if d == domain_l {
+					match_l = true
+					break
+				}
+			}
+
+			// If no match, then check against the larger list
+			if !match_l {
+				for _, d := range b.NavigatableDomains {
+					if d == domain_l {
+						match_l = true
+						break
+					}
+				}
+			}
+
+			if match_l {
+				// At this point, the url is in the allow list
+				urls_tmp = append(urls_tmp, l)
+			} else {
+				println("No allow-list match for: " + l)
+			}
+		}
+	}
 
 	// Before we close out, does it need to be opened in a real browser?
 	if s.Options&SITE_USEREALBROWSER > 0 {
@@ -533,6 +629,16 @@ func (b *Browser) VisitSite(s Site, p *Profile) (urls []string, sleeptime int64)
 			exec.Command("cmd", "/C", "start", url).Start()
 		}
 	}
+
+	// If this is a SearchEngine search, return everything, else return a random subset.
+	if s.Options&SITE_SEARCHENGINE > 0 {
+		urls = urls_tmp
+	} else {
+		urls = GetRandomSubSetOfUrls(urls_tmp, 1, 2)
+	}
+
+	// How long to sleep?
+	sleeptime = int64(float32(words) * (float32(p.PercentOfSiteRead) / 100.0) / float32(p.GetWPM()*60))
 
 	return
 }
@@ -558,18 +664,29 @@ func GetRequest(url string, ignorecontent bool) (newurl string, body []byte) {
 // Check for web files (.js, .css, images) and request them. Also
 // checks for <a href="xxx"> style links and returns them.
 func SimulateBrowserVisit(u string, b []byte) (words int64, links []string) {
+	parsedurl, err := urlpkg.Parse(u)
+	if err != nil {
+		return
+	}
+	domain := parsedurl.Hostname()
 	tokenizer := html.NewTokenizer(bytes.NewReader((b)))
+
 	simulatedownload := func(attr string) {
-		_, err := url.ParseRequestURI(attr)
+		_, err := urlpkg.ParseRequestURI(attr)
 		if err == nil {
 			GetRequest(attr, true)
 		} else {
-			_, err := url.ParseRequestURI(u + "/" + attr)
+			l := parsedurl.Scheme + "://" + strings.ReplaceAll(domain+"/"+attr, "//", "/")
+			_, err := urlpkg.ParseRequestURI(l)
 			if err == nil {
-				GetRequest(u+"/"+attr, true)
+				GetRequest(l, true)
 			}
 		}
 	}
+
+	// Use below to track if the last token was one we should ignore
+	lasttoken := ""
+
 tokenloop:
 	for {
 		tokenType := tokenizer.Next()
@@ -577,6 +694,7 @@ tokenloop:
 
 		switch tokenType {
 		case html.StartTagToken, html.SelfClosingTagToken:
+			lasttoken = token.Data
 			switch token.Data {
 			case "a":
 				// Add the href attribute to our list of links
@@ -617,7 +735,9 @@ tokenloop:
 				}
 			}
 		case html.TextToken:
-			words = words + int64(len(strings.Fields(token.Data)))
+			if lasttoken != "script" && lasttoken != "noscript" && lasttoken != "style" {
+				words = words + int64(len(strings.Fields(token.Data)))
+			}
 		case html.ErrorToken:
 			// Bail if EOF
 			if tokenizer.Err() == io.EOF {
@@ -625,16 +745,36 @@ tokenloop:
 			}
 		}
 	}
+	println(words)
 	return
 }
 
 func GetMinMax(min int64, max int64) (result int64) {
-	resultbig, err := rand.Int(rand.Reader, big.NewInt(int64(max-min)))
+	if max < min {
+		tmp := max
+		max = min
+		min = tmp
+	}
+	if min <= 0 {
+		return 0
+	}
+	resultbig, err := rand.Int(rand.Reader, big.NewInt(int64(max-min+1)))
 	result = resultbig.Int64()
 	if err == nil {
 		result = result + min
 	} else {
 		result = 0
+	}
+	return
+}
+
+func GetRandomSubSetOfUrls(urls []string, min int64, max int64) (results []string) {
+	if len(urls) == 0 {
+		return
+	}
+	mathrand.Seed(time.Now().Unix())
+	for i := 0; i < int(GetMinMax(min, max)); i++ {
+		results = append(results, urls[mathrand.Intn(len(urls))])
 	}
 	return
 }

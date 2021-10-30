@@ -38,6 +38,8 @@ func NewProfile(prof string) (p *Profile) {
 	// Generate a profile
 	// Check if the environment variable is set, otherwise "weighted random"
 	switch {
+	case profileChecker("testing"):
+		p.GenerateProfile_Testing()
 	case profileChecker("cybersec"):
 		p.GenerateProfile_Cybersecurity()
 	case profileChecker("dev"):
@@ -112,8 +114,8 @@ func (p *Profile) StartBrowsing() {
 
 		// Check if we are in the schedule to be browsing
 		if p.ScheduleFunc(time.Now()) {
-			if FakeWeightedRandomCheck(1000) {
-				// Very small chance of ignoring the queue and visiting a site
+			if FakeWeightedRandomCheck(100) {
+				// Small chance of ignoring the queue and visiting a site
 				// from the list of browser.navigatabledomains
 				i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Browser.NavigatableDomains))))
 				u := "https://" + p.Browser.NavigatableDomains[i.Int64()]
@@ -129,6 +131,8 @@ func (p *Profile) StartBrowsing() {
 				i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(urlqueue))))
 				u := urlqueue[i.Int64()]
 
+				println("Visiting from the queue: " + u)
+
 				// Remove it from the queue
 				urlqueue = append(urlqueue[:i.Int64()], urlqueue[i.Int64()+1:]...)
 
@@ -136,19 +140,19 @@ func (p *Profile) StartBrowsing() {
 				urls, sleeptime = p.Browser.VisitSite(Site{u, SITE_CANCLICKANYLINK, []string{}, 0, 0}, p)
 				urlqueue = append(urlqueue, urls...)
 			} else {
-				// Are we searching or are we visiting a site directly?
-				if FakeWeightedRandomCheck(30) {
-					if len(p.Searches) > 0 {
-						// Use a search engine and add a few items to the queue!
-						i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Searches))))
-						urls, sleeptime = p.Browser.ConductSearch(p.Searches[i.Int64()], p)
-						urlqueue = append(urlqueue, urls...)
-					}
-				} else {
+				// Are we visiting a site directly or searching?
+				if FakeWeightedRandomCheck(1) {
 					if len(p.Sites) > 0 {
 						// Visit a site directly!
 						i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Sites))))
 						urls, sleeptime = p.Browser.VisitSite(p.Sites[i.Int64()], p)
+						urlqueue = append(urlqueue, urls...)
+					}
+				} else {
+					if len(p.Searches) > 0 {
+						// Use a search engine and add a few items to the queue!
+						i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Searches))))
+						urls, sleeptime = p.Browser.ConductSearch(p.Searches[i.Int64()], p)
 						urlqueue = append(urlqueue, urls...)
 					}
 				}
