@@ -8,7 +8,6 @@ import (
 	"math/big"
 	mathrand "math/rand"
 	"net/http"
-	"net/url"
 	urlpkg "net/url"
 	"os"
 	"os/exec"
@@ -493,7 +492,7 @@ func (b *Browser) ConductSearch(s Search, p *Profile) (urls []string, sleeptime 
 		return
 	}
 	i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(s.Queries))))
-	query := url.QueryEscape(s.Queries[i.Int64()])
+	query := urlpkg.QueryEscape(s.Queries[i.Int64()])
 
 	// How many links are we following?
 	GetMinMax(s.MinResultsToClick, s.MaxResultsToClick)
