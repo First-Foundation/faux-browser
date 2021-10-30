@@ -62,8 +62,11 @@ func NewProfile(prof string) (p *Profile) {
 		p.GenerateProfile_Sales()
 	case profileChecker("tech"):
 		p.GenerateProfile_IT()
+	case profileChecker("threat"):
+		p.GenerateProfile_Threat()
 	default:
-		if FakeWeightedRandomCheck(30) {
+		// This hasn't been tested and could probably use some serious tweaking to mimic a real environment's demographics
+		if FakeWeightedRandomCheck(20) {
 			p.GenerateProfile_Management()
 		} else if FakeWeightedRandomCheck(20) {
 			p.GenerateProfile_Employee_Driven()
@@ -81,9 +84,9 @@ func NewProfile(prof string) (p *Profile) {
 			p.GenerateProfile_Cybersecurity()
 		} else if FakeWeightedRandomCheck(10) {
 			p.GenerateProfile_Gamer()
-		} else if FakeWeightedRandomCheck(30) {
-			p.GenerateProfile_Threat()
 		} else if FakeWeightedRandomCheck(20) {
+			p.GenerateProfile_Threat()
+		} else if FakeWeightedRandomCheck(10) {
 			p.GenerateProfile_Researcher()
 		} else {
 			p.GenerateProfile_Employee_Average()

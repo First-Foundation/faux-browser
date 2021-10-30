@@ -17,12 +17,23 @@ func (p *Profile) GenerateProfile_Cybersecurity() {
 	p.Sites = append(p.Sites, Site{"https://www.virustotal.com", SITE_CANCLICKLINK, []string{"virustotal.com", "www.virustotal.com"}, 0, 300})
 	p.Sites = append(p.Sites, Site{"https://gchq.github.io/CyberChef", SITE_DONTCLICKLINKS, []string{}, 300, 600})
 	p.Sites = append(p.Sites, Site{"https://www.exploit-db.com", SITE_CANCLICKLINK, []string{"exploit-db.com", "www.exploit-db.com"}, 30, 90})
+	p.Sites = append(p.Sites, Site{"https://nakedsecurity.sophos.com", SITE_CANCLICKANYLINK, []string{"sophos.com", "nakedsecurity.sophos.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.darkreading.com/", SITE_CANCLICKANYLINK, []string{"darkreading.com", "www.darkreading.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.cvedetails.com", SITE_CANCLICKANYLINK, []string{"cvedetails.com", "www.cvedetails.com"}, 30, 0})
+	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/netsec", SITE_CANCLICKANYLINK, []string{"reddit.com", "www.reddit.com"}, 0, 0})
 
 	///////////////////////////////////////////////////////////////////////////
 	// SEARCHES TO CONDUCT                                                   //
 	///////////////////////////////////////////////////////////////////////////
 
 	p.Searches = append(p.Searches, Search{SearchEngine_Google, []string{"dirtycow exploit", "dirty cow exploit", "proof of concept exploit for dirty cow"}, 1, 5})
+	p.Searches = append(p.Searches, Search{SearchEngine_Google, []string{"cybersecurity news", "cyber sec news", "infosec news", "hacker news", "hackers in the news"}, 1, 2})
+
+	// List of ransomware from wikipedia
+	p.Searches = append(p.Searches, Search{SearchEngine_Google, []string{"reveton", "cryptolocker", "cryptolocker.f", "torrentlocker", "cryptowall", "fusob", "wannacry", "petya", "bad rabbit", "samsam", "darkside", "syskey"}, 1, 2})
+
+	// List of C2 frameworks
+	p.Searches = append(p.Searches, Search{SearchEngine_Google, []string{"asyncrat", "caldera", "powershell empire", "covenant", "simple tactical agent relay", "poshc2", "quasar rat", "merlin c2", "metasploit", "meterpreter", "cobalt strike", "voodoo c2"}, 1, 2})
 }
 
 func ProfileScheduleFunc_Cybersecurity(t time.Time) (atdesk bool) {

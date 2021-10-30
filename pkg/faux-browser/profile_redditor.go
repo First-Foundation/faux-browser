@@ -13,9 +13,9 @@ func (p *Profile) GenerateProfile_Redditor() {
 	// SITES TO VISIT                                                        //
 	///////////////////////////////////////////////////////////////////////////
 
-	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/AskReddit", SITE_CANCLICKLINK | SITE_CANCLICKANYLINK, []string{"reddit.com", "www.reddit.com"}, 0, 0})
-	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/pics", SITE_CANCLICKLINK | SITE_CANCLICKANYLINK, []string{"reddit.com", "www.reddit.com"}, 0, 0})
-	p.Sites = append(p.Sites, Site{"https://www.buzzfeed.com", SITE_CANCLICKLINK | SITE_CANCLICKANYLINK, []string{"buzzfeed.com", "www.buzzfeed.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/AskReddit", SITE_CANCLICKANYLINK, []string{"reddit.com", "www.reddit.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.reddit.com/r/pics", SITE_CANCLICKANYLINK, []string{"reddit.com", "www.reddit.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.buzzfeed.com", SITE_CANCLICKANYLINK, []string{"buzzfeed.com", "www.buzzfeed.com"}, 0, 0})
 
 	///////////////////////////////////////////////////////////////////////////
 	// SEARCHES TO CONDUCT                                                   //

@@ -150,6 +150,10 @@ func NewBrowser() (b *Browser) {
 		"craigslist.org",
 		"www.craigslist.org",
 
+		// Dark Reading
+		"darkreading.com",
+		"www.darkreading.com",
+
 		// Dictionary.com Sites
 		"dictionary.com",
 		"www.dictionary.com",
@@ -384,6 +388,10 @@ func NewBrowser() (b *Browser) {
 		"rottentomatoes.com",
 		"www.rottentomatoes.com",
 
+		// Sophos Sites
+		"sophos.com",
+		"nakedsecurity.sophos.com",
+
 		// Soundcloud Sites
 		"soundcloud.com",
 		"community.soundcloud.com",
@@ -510,7 +518,7 @@ func (b *Browser) ConductSearch(s Search, p *Profile) (urls []string, sleeptime 
 		return
 	}
 
-	urls_tmp, sleeptime := b.VisitSite(Site{u, SITE_SEARCHENGINE, []string{}, 0, 0}, p)
+	urls_tmp, sleeptime := b.VisitSite(Site{u, SITE_SEARCHENGINE | SITE_CANCLICKANYLINK, []string{}, 0, 0}, p)
 
 	var search_results []string
 
@@ -591,19 +599,23 @@ func (b *Browser) VisitSite(s Site, p *Profile) (urls []string, sleeptime int64)
 			domain_l := parsedurl_l.Hostname()
 
 			// Check if it is in the smaller site list of domains we can visit
-			for _, d := range s.NavigatableDomains {
-				if d == domain_l {
-					match_l = true
-					break
+			if s.Options&SITE_CANCLICKLINK != 0 || s.Options&SITE_CANCLICKANYLINK != 0 {
+				for _, d := range s.NavigatableDomains {
+					if d == domain_l {
+						match_l = true
+						break
+					}
 				}
 			}
 
 			// If no match, then check against the larger list
-			if !match_l {
-				for _, d := range b.NavigatableDomains {
-					if d == domain_l {
-						match_l = true
-						break
+			if s.Options&SITE_CANCLICKANYLINK != 0 || s.Options&SITE_SEARCHENGINE != 0 {
+				if !match_l {
+					for _, d := range b.NavigatableDomains {
+						if d == domain_l {
+							match_l = true
+							break
+						}
 					}
 				}
 			}
@@ -618,7 +630,7 @@ func (b *Browser) VisitSite(s Site, p *Profile) (urls []string, sleeptime int64)
 	}
 
 	// Before we close out, does it need to be opened in a real browser?
-	if s.Options&SITE_USEREALBROWSER > 0 {
+	if s.Options&SITE_USEREALBROWSER != 0 {
 		switch runtime.GOOS {
 		case "darwin":
 			exec.Command("open", url).Start()

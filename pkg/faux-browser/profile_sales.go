@@ -13,7 +13,7 @@ func (p *Profile) GenerateProfile_Sales() {
 	// SITES TO VISIT                                                        //
 	///////////////////////////////////////////////////////////////////////////
 
-	p.Sites = append(p.Sites, Site{"https://www.salesforce.com", SITE_CANCLICKLINK | SITE_CANCLICKANYLINK, []string{"salesforce.com", "www.salesforce.com"}, 0, 0})
+	p.Sites = append(p.Sites, Site{"https://www.salesforce.com", SITE_CANCLICKANYLINK, []string{"salesforce.com", "www.salesforce.com"}, 0, 0})
 	p.Sites = append(p.Sites, Site{"https://www.neilpatel.com", SITE_CANCLICKLINK, []string{"neilpatel.com", "www.neilpatel.com"}, 0, 0})
 
 	///////////////////////////////////////////////////////////////////////////
