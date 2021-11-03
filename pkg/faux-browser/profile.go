@@ -144,7 +144,7 @@ func (p *Profile) StartBrowsing() {
 				urlqueue = append(urlqueue, urls...)
 			} else {
 				// Are we visiting a site directly or searching?
-				if FakeWeightedRandomCheck(1) {
+				if FakeWeightedRandomCheck(10) {
 					if len(p.Sites) > 0 {
 						// Visit a site directly!
 						i, _ := rand.Int(rand.Reader, big.NewInt(int64(len(p.Sites))))
