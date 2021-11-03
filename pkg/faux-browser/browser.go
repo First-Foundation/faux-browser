@@ -533,7 +533,7 @@ func (b *Browser) ConductSearch(s Search, p *Profile) (urls []string, sleeptime 
 	case SearchEngine_Google:
 		// Filter on "/url?q=" where it does *not* have accounts.google.com in it
 		for _, url := range urls_tmp {
-			if strings.Contains(url, "google.com/url?q=") && !strings.Contains(url, "accounts.google.com") {
+			if strings.Contains(url, "google.com/url?q=") && !strings.Contains(url, "accounts.google.com") && !strings.Contains(url, "support.google.com") {
 				search_results = append(search_results, url)
 			}
 		}

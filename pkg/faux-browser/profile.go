@@ -101,7 +101,7 @@ func NewProfile(prof string) (p *Profile) {
 
 func FakeWeightedRandomCheck(check int64) bool {
 	x, _ := rand.Int(rand.Reader, big.NewInt(check))
-	return x.Int64() == 1
+	return x.Int64() == 0
 }
 
 ///////////////////////////////////////////////////////////////////////////////
