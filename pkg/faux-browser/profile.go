@@ -23,7 +23,9 @@ type Profile struct {
 type ProfileScheduleFunc func(time.Time) bool
 
 func String2Time24(s string) (t time.Time) {
+	now := time.Now()
 	t, _ = time.Parse("15:04", s)
+	t = t.AddDate(now.Year(), int(now.Month())-1, now.Day()-1)
 	return
 }
 
