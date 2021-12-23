@@ -55,7 +55,12 @@ jobs:
         # Prefix the list here with "+" to use these queries and those in the config file.
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
-    - name: Build Browser
+    - name: Install dependencies
+      run: |
+        go version
+        go get golang.org/x/net/html
+        
+    - name: Build Faux-Browser
       run: go build -v ./faux-browser.go
 
     - name: Perform CodeQL Analysis
